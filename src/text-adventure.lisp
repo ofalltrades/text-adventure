@@ -1,3 +1,5 @@
+(in-package :text-adventure)
+
 (defparameter *locations* '((riverbank
                              (You are on a chilly riverbank surrounded by a light fog.
                               your clothes are soaked from being in the river. It
@@ -56,7 +58,7 @@
 
 (defun items-at (loc items item-loc)
   (labels ((at-loc-p (item)
-             (eq (cadr (assoc item pitem-loc)) loc)))
+             (eq (cadr (assoc item item-loc)) loc)))
     (remove-if-not #'at-loc-p items)))
 
 (defun describe-items (loc items item-loc)
@@ -76,16 +78,19 @@
 (defun look ()
   (append (describe-location *location* *locations*)
           (describe-paths *locations* *paths*)
-          (describe-items *location* *items* *items-locations*)))
+          (describe-items *location* *items* *item-locations*)))
 
 (defun take (item)
   (cond ((member item
                  (items-at *location* *items* *item-locations*))
-         (push `(,item body) *item-locations*)
+         (push `(,item player) *item-locations*)
          `(You are now carrying the ,item))
         (t '(You cannot take that.))))
 
-;; (defun prompt-read (lst)
+(defun inventory ()
+  (cons 'inventory- (items-at 'player *items* *item-locations*)))
+
+;; (defun game-repl (lst)
 ;;   (format *query-io* "~{~A ~}~%>>> " lst)
 ;;   (force-output *query-io*)
 ;;   (read-line *query-io*))
